@@ -13,9 +13,12 @@ const cache: Record<string, any> = {};
 export const useCardinalIdentity = (walletId: string) => {
   const [twitterURL, setTwitterURL] = useState("");
   const [twitterHandle, setTwitterHandle] = useState("");
-
-  useEffect(() => {
-    const getTwitterIdentity = async () => {
+  const [loading, setLoading] = useState(false);
+  
+  const getIdentity = async () => {
+    setLoading(true);
+    
+      const getTwitterIdentity = async () => {
       const walletKey = new PublicKey(walletId);
       const cardinalData = await tryGetName(indexConnection, walletKey);
 
@@ -43,6 +46,14 @@ export const useCardinalIdentity = (walletId: string) => {
     } else if (walletId && !cache[walletId]) {
       // we haven't checked their identity yet
       getTwitterIdentity();
+    }
+    
+    setLoading(false);
+  }
+  
+  useEffect(() => {
+    if (!loading){
+      getIdentity()
     }
   }, [walletId]);
 
